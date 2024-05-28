@@ -228,7 +228,6 @@ function check_wallet() {
 }
 
 function running() {
-    cd solxen
     screen -dmS solxen bash -c 'cd solxen && ./solxen-tx miner'
 }
 
