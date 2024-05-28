@@ -8,14 +8,7 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 
-function install_node() {
-
-read -p "请输入助记词: " mnemonic
-read -p "请输入并发数量: " num
-read -p "请输入优先级费用: " fee
-read -p "请输入间隔时间(毫秒): " time
-
-
+function install_without_wallet() {
 # 更新系统和安装必要的包
 echo "更新系统软件包..."
 sudo apt update && sudo apt upgrade -y
@@ -36,8 +29,6 @@ if ! command -v solana-keygen &> /dev/null; then
     echo "将 Solana CLI 添加到 PATH"
     export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
     export PATH="$HOME/.cargo/bin:$PATH"
-    
-
 fi
 
 # 创建 Solana 密钥对
@@ -58,10 +49,6 @@ else
     echo "脚本终止。请确保备份你的信息后再运行脚本。"
     exit 1
 fi
-
-# 迁移地址文件
-mv -f /root/.config/solana/id.json /root/.config/solana/id1.json
-
 
 # 获取操作系统类型和架构
 OS=$(uname -s)
@@ -101,50 +88,129 @@ cd $TMP_DIR
 echo "下载对应文件 $URL..."
 curl -L -o solxen-tx.tar.gz $URL
 
+# 创建用户主目录的 solxen 文件夹
+SOLXEN_DIR="$HOME/solxen"
+mkdir -p $SOLXEN_DIR
+
 # 解压缩文件
 echo "解压文件中 solxen-tx.tar.gz..."
-tar -xzvf solxen-tx.tar.gz
+tar -xzvf solxen-tx.tar.gz -C $SOLXEN_DIR
 
-# 确保 /usr/local/bin 目录存在
-sudo mkdir -p /usr/local/bin
+# 检查文件是否存在
+SOLXEN_FILE="$SOLXEN_DIR/solxen-tx.yaml"
+if [ ! -f $SOLXEN_FILE ]; then
+  echo "Error: $SOLXEN_FILE 不存在。"
+  exit 1
+fi
 
-# 创建根目录的 solxen 文件夹
-sudo mkdir -p solxen
+read -p "请输入SOL钱包助记词: " mnemonic
+read -p "请输入同时运行的钱包数量，建议输入4: " num
+read -p "请输入优先级费用: " fee
+read -p "请输入间隔时间(毫秒): " time
 
-# 假设解压后的文件包含一个可执行文件 solxen-tx
-# 将 solxen-tx 移动到 /usr/local/bin，其他文件移动到 /solxen
-for file in *; do
-  if [ "$file" = "solxen-tx" ]; then
-    echo "Moving $file to /usr/local/bin..."
-    sudo mv $file /usr/local/bin
-  else
-    echo "Moving $file to /solxen..."
-    sudo mv $file ~/solxen
-  fi
-done
 
-SOLXEN_FILE="/root/solxen/solxen-tx.yaml"
-
-sudo sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
-sudo sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
-sudo sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
-sudo sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
+# 更新 solxen-tx.yaml 文件
+sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
+sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
+sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
+sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
 
 # 清理临时目录
 cd ~
 rm -rf $TMP_DIR
 
+# 启动 screen 会话并运行命令
 screen -dmS solxen bash -c 'solxen-tx miner'
 
+echo "solxen-tx 安装和配置成功！"
 
 
 echo '====================== 安装完成，节点已经后台启动，请使用脚本功能2/输入screen -r SOLXEN 查看运行情况==========================='
 
 }
 
+function install_node() {
+
+# 获取操作系统类型和架构
+OS=$(uname -s)
+ARCH=$(uname -m)
+
+# 确定下载 URL
+case "$OS" in
+  "Darwin")
+    if [ "$ARCH" = "x86_64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-darwin-amd64.tar.gz"
+    elif [ "$ARCH" = "arm64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-darwin-arm64.tar.gz"
+    else
+      echo "不支持的架构: $ARCH"
+      exit 1
+    fi
+    ;;
+  "Linux")
+    if [ "$ARCH" = "x86_64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-linux-amd64.tar.gz"
+    elif [ "$ARCH" = "aarch64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-linux-arm64.tar.gz"
+    else
+      echo "不支持的架构: $ARCH"
+      exit 1
+    fi
+    ;;
+  *)
+    echo "无法支持的系统: $OS"
+    exit 1
+    ;;
+esac
+
+# 创建临时目录并下载文件
+TMP_DIR=$(mktemp -d)
+cd $TMP_DIR
+echo "下载对应文件 $URL..."
+curl -L -o solxen-tx.tar.gz $URL
+
+# 创建用户主目录的 solxen 文件夹
+SOLXEN_DIR="$HOME/solxen"
+mkdir -p $SOLXEN_DIR
+
+# 解压缩文件
+echo "解压文件中 solxen-tx.tar.gz..."
+tar -xzvf solxen-tx.tar.gz -C $SOLXEN_DIR
+
+# 检查文件是否存在
+SOLXEN_FILE="$SOLXEN_DIR/solxen-tx.yaml"
+if [ ! -f $SOLXEN_FILE ]; then
+  echo "Error: $SOLXEN_FILE 不存在。"
+  exit 1
+fi
+
+read -p "请输入SOL钱包助记词: " mnemonic
+read -p "请输入同时运行的钱包数量，建议输入4: " num
+read -p "请输入优先级费用: " fee
+read -p "请输入间隔时间(毫秒): " time
+
+
+# 更新 solxen-tx.yaml 文件
+sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
+sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
+sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
+sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
+
+# 清理临时目录
+cd ~
+rm -rf $TMP_DIR
+
+# 启动 screen 会话并运行命令
+screen -dmS solxen bash -c 'solxen-tx miner'
+
+echo "solxen-tx 安装和配置成功！"
+
+}
+
+
 # 查看进度
 function check_XEN() {
-    screen -r SOLXEN
+    screen -r solxen
 }
 
 # 主菜单
@@ -157,13 +223,15 @@ function main_menu() {
         echo "节点社区 Telegram 频道:https://t.me/niuwuriji"
         echo "退出脚本，请按键盘ctrl c退出即可"
         echo "请选择要执行的操作:"
-        echo "1. 安装节点"
-        echo "2. 查看运行情况"
+        echo "1. 全新安装节点，适合没有solana钱包用户"
+        echo "2. 常规安装节点，适合已有solana钱包用户"
+        echo "3. 查看运行情况"
         read -p "请输入选项（1-2）: " OPTION
 
         case $OPTION in
-        1) install_node ;;
-        2) check_XEN ;;
+        1) install_without_wallet ;;
+        2) install_node ;;
+        3) check_XEN ;;
         *) echo "无效选项。" ;;
         esac
         echo "按任意键返回主菜单..."
