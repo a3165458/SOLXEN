@@ -115,7 +115,7 @@ sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
 sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
 sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
 sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
-sed -i "s|ToAddr::.*|ToAddr:: $evm|" $SOLXEN_FILE
+sed -i "s|ToAddr:.*|ToAddr: $evm|" $SOLXEN_FILE
 
 # 清理临时目录
 cd ~
@@ -199,7 +199,7 @@ sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
 sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
 sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
 sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
-sed -i "s|ToAddr::.*|ToAddr:: $evm|" $SOLXEN_FILE
+sed -i "s|ToAddr:.*|ToAddr: $evm|" $SOLXEN_FILE
 
 # 清理临时目录
 cd ~
