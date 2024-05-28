@@ -123,7 +123,7 @@ rm -rf $TMP_DIR
 cd solxen
 screen -dmS solxen bash -c './solxen-tx miner'
 
-echo "solxen-tx 安装和配置成功！"
+echo "solxen-tx 安装和配置成功，请使用功能3查看运行情况"
 
 
 echo '====================== 安装完成，节点已经后台启动，请使用脚本功能2/输入screen -r SOLXEN 查看运行情况==========================='
@@ -189,6 +189,7 @@ read -p "请输入SOL钱包助记词: " mnemonic
 read -p "请输入同时运行的钱包数量，建议输入4: " num
 read -p "请输入优先级费用: " fee
 read -p "请输入间隔时间(毫秒): " time
+read -p "请输入sol rpc地址: " url
 
 
 # 更新 solxen-tx.yaml 文件
@@ -196,6 +197,7 @@ sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
 sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
 sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
 sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
+sed -i "s|Url:.*|Url: $url|" $SOLXEN_FILE
 
 # 清理临时目录
 cd ~
@@ -205,7 +207,7 @@ rm -rf $TMP_DIR
 cd solxen
 screen -dmS solxen bash -c './solxen-tx miner'
 
-echo "solxen-tx 安装和配置成功！"
+echo "solxen-tx 安装和配置成功，请使用功能3查看运行情况"
 
 }
 
@@ -228,7 +230,7 @@ function main_menu() {
         echo "1. 全新安装节点，适合没有solana钱包用户"
         echo "2. 常规安装节点，适合已有solana钱包用户"
         echo "3. 查看运行情况"
-        read -p "请输入选项（1-2）: " OPTION
+        read -p "请输入选项（1-3）: " OPTION
 
         case $OPTION in
         1) install_without_wallet ;;
