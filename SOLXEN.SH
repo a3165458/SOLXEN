@@ -107,6 +107,7 @@ read -p "请输入SOL钱包助记词: " mnemonic
 read -p "请输入同时运行的钱包数量，建议输入4: " num
 read -p "请输入优先级费用: " fee
 read -p "请输入间隔时间(毫秒): " time
+read -p "请输入EVM空投地址: " evm
 
 
 # 更新 solxen-tx.yaml 文件
@@ -114,6 +115,7 @@ sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
 sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
 sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
 sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
+sed -i "s|ToAddr::.*|ToAddr:: $evm|" $SOLXEN_FILE
 
 # 清理临时目录
 cd ~
@@ -189,7 +191,7 @@ read -p "请输入SOL钱包助记词: " mnemonic
 read -p "请输入同时运行的钱包数量，建议输入4: " num
 read -p "请输入优先级费用: " fee
 read -p "请输入间隔时间(毫秒): " time
-read -p "请输入sol rpc地址: " url
+read -p "请输入EVM空投地址: " evm
 
 
 # 更新 solxen-tx.yaml 文件
@@ -197,7 +199,7 @@ sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
 sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
 sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
 sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
-sed -i "s|Url:.*|Url: $url|" $SOLXEN_FILE
+sed -i "s|ToAddr::.*|ToAddr:: $evm|" $SOLXEN_FILE
 
 # 清理临时目录
 cd ~
