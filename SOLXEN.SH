@@ -222,6 +222,12 @@ function check_wallet() {
     ./solxen-tx balance
 }
 
+function running() {
+    cd solxen
+    screen -dmS solxen bash -c 'cd solxen && ./solxen-tx miner'
+}
+
+
 # 主菜单
 function main_menu() {
     while true; do
@@ -236,6 +242,7 @@ function main_menu() {
         echo "2. 常规安装节点，适合已有solana钱包用户"
         echo "3. 查看运行情况"
         echo "4. 查看钱包地址信息"
+        echo "5. 适用于修改某些配置后，重新启动挖矿"
         read -p "请输入选项（1-4）: " OPTION
 
         case $OPTION in
@@ -243,6 +250,7 @@ function main_menu() {
         2) install_node ;;
         3) check_XEN ;;
         4) check_wallet ;;
+        5) running ;;
         *) echo "无效选项。" ;;
         esac
         echo "按任意键返回主菜单..."
