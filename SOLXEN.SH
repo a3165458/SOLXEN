@@ -10,6 +10,12 @@ fi
 
 function install_node() {
 
+read -p "请输入助记词: " mnemonic
+read -p "请输入并发数量: " num
+read -p "请输入优先级费用: " fee
+read -p "请输入间隔时间(毫秒): " time
+
+
 # 更新系统和安装必要的包
 echo "更新系统软件包..."
 sudo apt update && sudo apt upgrade -y
@@ -53,125 +59,84 @@ else
     exit 1
 fi
 
-# 设置 Solana 测试网
-solana config set --url https://api.testnet.solana.com
-
-# 获取测试币
-solana airdrop 1
-
-# 查询余额（测试币）
-solana balance
-
 # 迁移地址文件
 mv -f /root/.config/solana/id.json /root/.config/solana/id1.json
 
-# 迁移地址文件
-solana-keygen new
-solana airdrop 1
-solana balance
-mv -f /root/.config/solana/id.json /root/.config/solana/id2.json
 
-# 备用水龙头链接
-echo "如果领取失败，请访问: https://faucet.solana.com/ or https://www.testnetfaucet.org/"
+# 获取操作系统类型和架构
+OS=$(uname -s)
+ARCH=$(uname -m)
 
-# 浏览器查询余额
-echo "Check balance online at: https://explorer.solana.com/address/8u3pJcoHCW1FkLZ2sNoPsowV5d6MTSVVGrfTdhWgqbKH?cluster=testnet"
+# 确定下载 URL
+case "$OS" in
+  "Darwin")
+    if [ "$ARCH" = "x86_64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-darwin-amd64.tar.gz"
+    elif [ "$ARCH" = "arm64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-darwin-arm64.tar.gz"
+    else
+      echo "不支持的架构: $ARCH"
+      exit 1
+    fi
+    ;;
+  "Linux")
+    if [ "$ARCH" = "x86_64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-linux-amd64.tar.gz"
+    elif [ "$ARCH" = "aarch64" ]; then
+      URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-alpha/solxen-tx-mainnet-alpha-linux-arm64.tar.gz"
+    else
+      echo "不支持的架构: $ARCH"
+      exit 1
+    fi
+    ;;
+  *)
+    echo "无法支持的系统: $OS"
+    exit 1
+    ;;
+esac
 
-# 配置其他环境
-source ~/.bashrc
+# 创建临时目录并下载文件
+TMP_DIR=$(mktemp -d)
+cd $TMP_DIR
+echo "下载对应文件 $URL..."
+curl -L -o solxen-tx.tar.gz $URL
 
-# 创建新的 Rust 项目
-cargo new my_project
-cd my_project
+# 解压缩文件
+echo "解压文件中 solxen-tx.tar.gz..."
+tar -xzvf solxen-tx.tar.gz
 
-# 编辑 Cargo.toml 文件，添加 Solana 依赖
-echo 'solana-client = "1.10"' >> Cargo.toml
-echo 'solana-sdk = "1.10"' >> Cargo.toml
+# 确保 /usr/local/bin 目录存在
+sudo mkdir -p /usr/local/bin
 
-# 编辑 Rust 程序文件
-cat <<EOF >src/main.rs
-use solana_client::rpc_client::RpcClient;
-use solana_sdk::{
-    compute_budget::ComputeBudgetInstruction,
-    instruction::{AccountMeta, Instruction},
-    pubkey::Pubkey,
-    signature::{Keypair, Signer},
-    transaction::Transaction,
-    system_instruction,
-};
-use solana_sdk::signer::keypair::read_keypair_file;
-use std::{str::FromStr, sync::Arc, thread};
-use std::path::PathBuf;
+# 创建根目录的 solxen 文件夹
+sudo mkdir -p solxen
 
-fn main() {
-    // RPC URL for the Solana testnet
-    let rpc_url = String::from("https://api.testnet.solana.com");
-    let client = RpcClient::new(&rpc_url);
-    let client = Arc::new(client);
+# 假设解压后的文件包含一个可执行文件 solxen-tx
+# 将 solxen-tx 移动到 /usr/local/bin，其他文件移动到 /solxen
+for file in *; do
+  if [ "$file" = "solxen-tx" ]; then
+    echo "Moving $file to /usr/local/bin..."
+    sudo mv $file /usr/local/bin
+  else
+    echo "Moving $file to /solxen..."
+    sudo mv $file ~/solxen
+  fi
+done
 
-    // Load keypairs from files
-    let keypair_path1 = PathBuf::from("/root/.config/solana/id1.json");
-    let keypair_path2 = PathBuf::from("/root/.config/solana/id2.json");
-    let payer1 = read_keypair_file(&keypair_path1).expect("Failed to read keypair from file 1");
-    let payer2 = read_keypair_file(&keypair_path2).expect("Failed to read keypair from file 2");
+SOLXEN_FILE="/root/solxen/solxen-tx.yaml"
 
-    // Multithreading example with Solana transactions
-    let key_bytes1 = payer1.to_bytes();
-    let key_bytes2 = payer2.to_bytes();
+sudo sed -i "s|Mnemonic:.*|Mnemonic: \"$mnemonic\"|" $SOLXEN_FILE
+sudo sed -i "s|Num:.*|Num: $num|" $SOLXEN_FILE
+sudo sed -i "s|Fee:.*|Fee: $fee|" $SOLXEN_FILE
+sudo sed -i "s|Time:.*|Time: $time|" $SOLXEN_FILE
 
-    let handles1: Vec<_> = (0..10).map(|_| {
-        let client = Arc::clone(&client);
-        let key_bytes = key_bytes1.clone();
+# 清理临时目录
+cd ~
+rm -rf $TMP_DIR
 
-        thread::spawn(move || {
-            let payer = Keypair::from_bytes(&key_bytes).expect("Failed to deserialize keypair");
-            send_transaction(&client, &payer);
-        })
-    }).collect();
+screen -dmS solxen bash -c 'solxen-tx miner'
 
-    let handles2: Vec<_> = (0..10).map(|_| {
-        let client = Arc::clone(&client);
-        let key_bytes = key_bytes2.clone();
 
-        thread::spawn(move || {
-            let payer = Keypair::from_bytes(&key_bytes).expect("Failed to deserialize keypair");
-            send_transaction(&client, &payer);
-        })
-    }).collect();
-
-    for handle in handles1.into_iter().chain(handles2) {
-        handle.join().unwrap();
-    }
-}
-
-fn send_transaction(client: &RpcClient, payer: &Keypair) {
-    let program_id = Pubkey::from_str("7R2KMCUW1GimTEiS8tp8jJrde2N66yQiJ1MEUTbaPgfq").unwrap();
-    let result_account = Keypair::new();
-    let space = 5;
-    let rent_exemption = client.get_minimum_balance_for_rent_exemption(space).unwrap();
-    let create_account_instruction = system_instruction::create_account(&payer.pubkey(), &result_account.pubkey(), rent_exemption, space as u64, &program_id);
-    let process_instruction_accounts = vec![AccountMeta::new(result_account.pubkey(), false)];
-    let process_instruction = Instruction::new_with_bincode(program_id, &[0], process_instruction_accounts);
-    let max_units = 1_200_000;
-    let compute_budget_instruction = ComputeBudgetInstruction::set_compute_unit_limit(max_units);
-    let mut transaction = Transaction::new_with_payer(&[compute_budget_instruction, create_account_instruction, process_instruction], Some(&payer.pubkey()));
-    let recent_blockhash = client.get_latest_blockhash().unwrap();
-    transaction.sign(&[payer, &result_account], recent_blockhash);
-    match client.send_and_confirm_transaction(&transaction) {
-        Ok(_) => println!("Transaction sent successfully."),
-        Err(e) => eprintln!("Failed to send transaction: {}", e),
-    }
-}
-EOF
-
-# 安装 GCC
-sudo apt install gcc
-
-# 构建项目
-cargo build
-
-# 运行项目
-screen -dmS SOLXEN bash -c 'while true; do cargo run; echo "程序已退出，将在5秒后重启..."; sleep 5; done'
 
 echo '====================== 安装完成，节点已经后台启动，请使用脚本功能2/输入screen -r SOLXEN 查看运行情况==========================='
 
