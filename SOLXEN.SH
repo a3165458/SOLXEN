@@ -107,7 +107,7 @@ read -p "请输入SOL钱包助记词: " mnemonic
 read -p "请输入同时运行的钱包数量，建议输入4: " num
 read -p "请输入优先级费用: " fee
 read -p "请输入间隔时间(毫秒): " time
-read -p "请输入EVM空投地址: " evm
+read -p "请输入空投接收地址，需要ETH钱包地址: " evm
 
 
 # 更新 solxen-tx.yaml 文件
@@ -191,7 +191,7 @@ read -p "请输入SOL钱包助记词: " mnemonic
 read -p "请输入同时运行的钱包数量，建议输入4: " num
 read -p "请输入优先级费用: " fee
 read -p "请输入间隔时间(毫秒): " time
-read -p "请输入EVM空投地址: " evm
+read -p "请输入空投接收地址，需要ETH钱包地址: " evm
 
 
 # 更新 solxen-tx.yaml 文件
