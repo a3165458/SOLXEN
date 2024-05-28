@@ -120,7 +120,8 @@ cd ~
 rm -rf $TMP_DIR
 
 # 启动 screen 会话并运行命令
-screen -dmS solxen bash -c 'solxen-tx miner'
+cd solxen
+screen -dmS solxen bash -c './solxen-tx miner'
 
 echo "solxen-tx 安装和配置成功！"
 
@@ -201,7 +202,8 @@ cd ~
 rm -rf $TMP_DIR
 
 # 启动 screen 会话并运行命令
-screen -dmS solxen bash -c 'solxen-tx miner'
+cd solxen
+screen -dmS solxen bash -c './solxen-tx miner'
 
 echo "solxen-tx 安装和配置成功！"
 
