@@ -122,7 +122,7 @@ function install_without_wallet() {
     rm -rf $TMP_DIR
 
     # 启动 screen 会话并运行命令
-    screen -dmS solxen bash -c 'while true; do cd solxen && ./solxen-tx miner; sleep 5; done'
+    screen -dmS solxen bash -c 'while true; do cd $HOME/solxen && ./solxen-tx miner; sleep 5; done'
 
     echo "solxen-tx 安装和配置成功，请使用功能3查看运行情况"
 
@@ -203,7 +203,7 @@ function install_node() {
     rm -rf $TMP_DIR
 
     # 启动 screen 会话并运行命令
-    screen -dmS solxen bash -c 'while true; do cd solxen && ./solxen-tx miner; sleep 5; done'
+    screen -dmS solxen bash -c 'while true; do cd $HOME/solxen && ./solxen-tx miner; sleep 5; done'
 
 
     echo "solxen-tx 安装和配置成功，请使用功能3查看运行情况"
