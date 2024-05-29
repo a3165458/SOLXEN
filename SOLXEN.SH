@@ -57,9 +57,9 @@ function install_without_wallet() {
     case "$OS" in
       "Darwin")
         if [ "$ARCH" = "x86_64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-darwin-amd64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-darwin-amd64.tar.gz"
         elif [ "$ARCH" = "arm64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-darwin-arm64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-darwin-arm64.tar.gz"
         else
           echo "不支持的架构: $ARCH"
           exit 1
@@ -67,9 +67,9 @@ function install_without_wallet() {
         ;;
       "Linux")
         if [ "$ARCH" = "x86_64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-linux-amd64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-linux-amd64.tar.gz"
         elif [ "$ARCH" = "aarch64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-linux-arm64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-linux-arm64.tar.gz"
         else
           echo "不支持的架构: $ARCH"
           exit 1
@@ -139,9 +139,9 @@ function install_node() {
     case "$OS" in
       "Darwin")
         if [ "$ARCH" = "x86_64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-darwin-amd64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-darwin-amd64.tar.gz"
         elif [ "$ARCH" = "arm64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-darwin-arm64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-darwin-arm64.tar.gz"
         else
           echo "不支持的架构: $ARCH"
           exit 1
@@ -149,9 +149,9 @@ function install_node() {
         ;;
       "Linux")
         if [ "$ARCH" = "x86_64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-linux-amd64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-linux-amd64.tar.gz"
         elif [ "$ARCH" = "aarch64" ]; then
-          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta3/solxen-tx-mainnet-beta3-linux-arm64.tar.gz"
+          URL="https://github.com/mmc-98/solxen-tx/releases/download/mainnet-beta2/solxen-tx-mainnet-beta2-linux-arm64.tar.gz"
         else
           echo "不支持的架构: $ARCH"
           exit 1
