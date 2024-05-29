@@ -123,7 +123,7 @@ function install_without_wallet() {
 
     # 启动 screen 会话并运行命令
     cd solxen
-    screen -dmS solxen bash -c './solxen-tx miner'
+    screen -dmS solxen bash -c 'while true; do cd solxen && ./solxen-tx miner; sleep 5; done'
 
     echo "solxen-tx 安装和配置成功，请使用功能3查看运行情况"
 
@@ -205,7 +205,8 @@ function install_node() {
 
     # 启动 screen 会话并运行命令
     cd solxen
-    screen -dmS solxen bash -c './solxen-tx miner'
+    screen -dmS solxen bash -c 'while true; do cd solxen && ./solxen-tx miner; sleep 5; done'
+
 
     echo "solxen-tx 安装和配置成功，请使用功能3查看运行情况"
 }
@@ -221,7 +222,7 @@ function check_wallet() {
 }
 
 function running() {
-    screen -dmS solxen bash -c 'cd solxen && ./solxen-tx miner'
+    screen -dmS solxen bash -c 'while true; do cd solxen && ./solxen-tx miner; sleep 5; done'
 }
 
 # 主菜单
