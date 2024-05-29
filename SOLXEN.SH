@@ -220,6 +220,7 @@ function check_wallet() {
 }
 
 function running() {
+    cd ~
     screen -dmS solxen bash -c 'while true; do cd solxen && ./solxen-tx miner; sleep 5; done'
 }
 
